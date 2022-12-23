@@ -1,11 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
+
+	"github.com/chewwey/assessment/user"
+	"github.com/labstack/echo/v4"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	fmt.Println("Please use server.go for main file")
-	fmt.Println("start at port:", os.Getenv("PORT"))
+	user.InitDB()
+
+	e := echo.New()
+	log.Fatal(e.Start(os.Getenv("PORT")))
+
 }
