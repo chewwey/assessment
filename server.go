@@ -13,8 +13,10 @@ func main() {
 	user.InitDB()
 
 	e := echo.New()
-	log.Fatal(e.Start(os.Getenv("PORT")))
 
 	e.POST("/expenses", user.CreateExpensesHandler)
 	e.GET("/expenses/:id", user.GetExpensesById)
+	e.PUT("expenses/:id", user.UpdateByIdHandler)
+
+	log.Fatal(e.Start(os.Getenv("PORT")))
 }
