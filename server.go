@@ -16,5 +16,5 @@ func main() {
 	log.Fatal(e.Start(os.Getenv("PORT")))
 
 	e.POST("/expenses", user.CreateExpensesHandler)
-
+	e.GET("/expenses/:id", user.GetExpensesById)
 }
