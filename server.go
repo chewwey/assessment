@@ -15,4 +15,6 @@ func main() {
 	e := echo.New()
 	log.Fatal(e.Start(os.Getenv("PORT")))
 
+	e.POST("/expenses", user.CreateExpensesHandler)
+
 }
