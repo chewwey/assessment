@@ -28,7 +28,7 @@ func GetExpensesByIdHandler(c echo.Context) error {
 	}
 }
 
-func GetAllUser(c echo.Context) error {
+func GetAllUserHandler(c echo.Context) error {
 	exps := []Expenses{}
 
 	rows, err := DB.Query("SELECT * FROM expenses")
