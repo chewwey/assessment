@@ -27,3 +27,23 @@ func GetExpensesByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, Err{Message: "can't scan user:" + err.Error()})
 	}
 }
+
+func GetAllUser(c echo.Context) error {
+	exps := []Expenses{}
+
+	rows, err := DB.Query("SELECT * FROM expenses")
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
+	}
+	for rows.Next() {
+		e := Expenses{}
+		err := rows.Scan(&e.ID, &e.Title, &e.Amount, &e.Note, pq.Array(&e.Tag))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
+
+		}
+		exps = append(exps, e)
+	}
+
+	return c.JSON(http.StatusOK, exps)
+}
