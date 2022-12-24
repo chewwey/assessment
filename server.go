@@ -15,7 +15,7 @@ func main() {
 	e := echo.New()
 
 	e.POST("/expenses", user.CreateExpensesHandler)
-	e.GET("/expenses/:id", user.GetExpensesById)
+	e.GET("/expenses/:id", user.GetExpensesByIdHandler)
 	e.PUT("expenses/:id", user.UpdateByIdHandler)
 
 	log.Fatal(e.Start(os.Getenv("PORT")))

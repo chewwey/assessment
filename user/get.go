@@ -8,7 +8,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func GetExpensesById(c echo.Context) error {
+func GetExpensesByIdHandler(c echo.Context) error {
 	id := c.Param("id")
 	stmt, err := DB.Prepare("SELECT id, title, amount, note, tags FROM expenses WHERE id = $1")
 	if err != nil {
