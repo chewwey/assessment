@@ -25,9 +25,16 @@ func UpdateByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
 	}
 
-	stmt.Exec(e.Title, e.Amount, e.Note, pq.Array(e.Tag), c.Param("id"))
+	res, err := stmt.Exec(e.Title, e.Amount, e.Note, pq.Array(e.Tag), c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
+	}
+	if count == 0 {
+		return c.JSON(http.StatusNotFound, Err{Message: "expense not found" + err.Error()})
 	}
 
 	e.ID = id
