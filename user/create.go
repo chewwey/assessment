@@ -14,7 +14,12 @@ func CreateExpensesHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
 	}
 
-	DB.Exec("INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4)", e.Title, e.Amount, e.Note, pq.Array(e.Tag))
+	if e.Title == "" || e.Amount == 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid title or amount")
+	}
+
+	row := DB.QueryRow("INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4) RETURNING id", e.Title, e.Amount, e.Note, pq.Array(e.Tag))
+	err = row.Scan(&e.ID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
 	}
