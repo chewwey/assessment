@@ -16,7 +16,7 @@ func main() {
 
 	e.POST("/expenses", user.CreateExpensesHandler)
 	e.GET("/expenses/:id", user.GetExpensesByIdHandler)
-	e.PUT("expenses/:id", user.UpdateByIdHandler)
-	e.GET("expenses/", user.GetAllUserHandler)
+	e.PUT("/expenses/:id", user.UpdateByIdHandler)
+	e.GET("/expenses", user.GetAllUserHandler)
 	log.Fatal(e.Start(os.Getenv("PORT")))
 }
