@@ -1,5 +1,7 @@
 package user
 
+import "database/sql"
+
 type Expenses struct {
 	ID     int      `json:"id"`
 	Title  string   `json:"title"`
@@ -10,4 +12,8 @@ type Expenses struct {
 
 type Err struct {
 	Message string
+}
+
+type handler struct {
+	DB *sql.DB
 }

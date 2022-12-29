@@ -8,9 +8,9 @@ import (
 	"github.com/lib/pq"
 )
 
-func GetExpensesByIdHandler(c echo.Context) error {
+func (h *handler) GetExpensesByIdHandler(c echo.Context) error {
 	id := c.Param("id")
-	stmt, err := DB.Prepare("SELECT id, title, amount, note, tags FROM expenses WHERE id = $1")
+	stmt, err := h.DB.Prepare("SELECT id, title, amount, note, tags FROM expenses WHERE id = $1")
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, Err{Message: "can't prepare query expenses statment:" + err.Error()})
 	}
@@ -28,10 +28,10 @@ func GetExpensesByIdHandler(c echo.Context) error {
 	}
 }
 
-func GetAllUserHandler(c echo.Context) error {
+func (h *handler) GetAllUserHandler(c echo.Context) error {
 	exps := []Expenses{}
 
-	rows, err := DB.Query("SELECT * FROM expenses")
+	rows, err := h.DB.Query("SELECT * FROM expenses")
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
 	}
