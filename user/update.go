@@ -8,7 +8,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func UpdateByIdHandler(c echo.Context) error {
+func (h *Handler) UpdateByIdHandler(c echo.Context) error {
 	e := Expenses{}
 	err := c.Bind(&e)
 	if err != nil {
@@ -20,7 +20,7 @@ func UpdateByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
 	}
 
-	stmt, err := DB.Prepare("UPDATE expenses SET title = $1, amount = $2, note = $3, tags = $4 WHERE id=$5;")
+	stmt, err := h.DB.Prepare("UPDATE expenses SET title = $1, amount = $2, note = $3, tags = $4 WHERE id=$5;")
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
 	}

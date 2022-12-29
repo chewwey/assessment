@@ -15,17 +15,17 @@ import (
 )
 
 func main() {
-	user.InitDB()
+	db := user.InitDB()
 
 	e := echo.New()
-	h := handler{}
+	h := user.Handler{DB: db}
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
-	e.POST("/expenses", user.CreateExpensesHandler)
-	e.GET("/expenses/:id", user.GetExpensesByIdHandler)
-	e.PUT("/expenses/:id", user.UpdateByIdHandler)
-	e.GET("/expenses", user.GetAllUserHandler)
+	e.POST("/expenses", h.CreateExpensesHandler)
+	e.GET("/expenses/:id", h.GetExpensesByIdHandler)
+	e.PUT("/expenses/:id", h.UpdateByIdHandler)
+	e.GET("/expenses", h.GetAllUserHandler)
 
 	go func() {
 		if err := e.Start(os.Getenv("PORT")); err != nil && err != http.ErrServerClosed {

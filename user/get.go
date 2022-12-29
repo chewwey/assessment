@@ -8,7 +8,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (h *handler) GetExpensesByIdHandler(c echo.Context) error {
+func (h *Handler) GetExpensesByIdHandler(c echo.Context) error {
 	id := c.Param("id")
 	stmt, err := h.DB.Prepare("SELECT id, title, amount, note, tags FROM expenses WHERE id = $1")
 	if err != nil {
@@ -28,7 +28,7 @@ func (h *handler) GetExpensesByIdHandler(c echo.Context) error {
 	}
 }
 
-func (h *handler) GetAllUserHandler(c echo.Context) error {
+func (h *Handler) GetAllUserHandler(c echo.Context) error {
 	exps := []Expenses{}
 
 	rows, err := h.DB.Query("SELECT * FROM expenses")

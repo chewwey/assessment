@@ -14,6 +14,6 @@ type Err struct {
 	Message string
 }
 
-type handler struct {
+type Handler struct {
 	DB *sql.DB
 }
