@@ -18,6 +18,7 @@ func main() {
 	user.InitDB()
 
 	e := echo.New()
+	h := handler{}
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
