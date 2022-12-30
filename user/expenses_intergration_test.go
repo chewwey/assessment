@@ -18,7 +18,7 @@ import (
 // story3: update expenses by id
 // story4: get all expenses
 
-func TestCreate(t *testing.T) {
+func TestCreateExpenses(t *testing.T) {
 	body := bytes.NewBufferString(`{
 		"title": "strawberry smoothie",
 		"amount": 79,
@@ -55,7 +55,7 @@ func TestGetExpensesByID(t *testing.T) {
 	assert.NotEmpty(t, lastExp.Tag)
 }
 
-func TestUpdateCustomer(t *testing.T) {
+func TestUpdateExpenses(t *testing.T) {
 	id := seedExpenses(t).ID
 	e := Expenses{
 		ID:     id,
