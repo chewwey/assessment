@@ -2,27 +2,59 @@ package user
 
 import (
 	"bytes"
+	"context"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
-//test require
+// test require
 // story1: create expenses
 // story2: get expenses by id
 // story3: update expenses by id
 // story4: get all expenses
+const (
+	serverPort = 2565
+)
 
-func TestCreate(t *testing.T) {
+func TestCreateExpenses(t *testing.T) {
+	eh := echo.New()
+	go func(e *echo.Echo) {
+		db, err := sql.Open("postgres", "postgresql://root:root@db/go-expenses?sslmode=disable")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		h := NewApplication(db)
+
+		e.POST("/expenses", h.CreateExpensesHandler)
+		e.Start(fmt.Sprintf(":%d", serverPort))
+	}(eh)
+	for {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
 	body := bytes.NewBufferString(`{
 		"title": "strawberry smoothie",
 		"amount": 79,
-		"note": "night market promotion discount 10 bath", 
+		"note": "night market promotion discount 10 bath",
 		"tags": ["food", "beverage"]
 	}`)
 	var e Expenses
@@ -37,11 +69,39 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, float32(79), e.Amount)
 	assert.Equal(t, "night market promotion discount 10 bath", e.Note)
 	assert.Equal(t, []string{"food", "beverage"}, e.Tag)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = eh.Shutdown(ctx)
+	assert.NoError(t, err)
 }
 
 func TestGetExpensesByID(t *testing.T) {
-	c := seedExpenses(t)
+	eh := echo.New()
+	go func(e *echo.Echo) {
+		db, err := sql.Open("postgres", "postgresql://root:root@db/go-expenses?sslmode=disable")
+		if err != nil {
+			log.Fatal(err)
+		}
 
+		h := NewApplication(db)
+
+		e.POST("/expenses", h.CreateExpensesHandler)
+		e.GET("/expenses/:id", h.GetExpensesByIdHandler)
+		e.Start(fmt.Sprintf(":%d", serverPort))
+	}(eh)
+	for {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
+
+	c := seedExpenses(t)
 	var lastExp Expenses
 	res := request(http.MethodGet, uri("expenses", strconv.Itoa(c.ID)), nil)
 	err := res.Decode(&lastExp)
@@ -53,15 +113,44 @@ func TestGetExpensesByID(t *testing.T) {
 	assert.NotEmpty(t, lastExp.Amount)
 	assert.NotEmpty(t, lastExp.Note)
 	assert.NotEmpty(t, lastExp.Tag)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = eh.Shutdown(ctx)
+	assert.NoError(t, err)
 }
 
-func TestUpdateCustomer(t *testing.T) {
+func TestUpdateExpenses(t *testing.T) {
+	eh := echo.New()
+	go func(e *echo.Echo) {
+		db, err := sql.Open("postgres", "postgresql://root:root@db/go-expenses?sslmode=disable")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		h := NewApplication(db)
+
+		e.POST("/expenses", h.CreateExpensesHandler)
+		e.PUT("/expenses/:id", h.UpdateByIdHandler)
+		e.Start(fmt.Sprintf(":%d", serverPort))
+	}(eh)
+	for {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
+
 	id := seedExpenses(t).ID
 	e := Expenses{
 		ID:     id,
 		Title:  "PS5",
-		Amount: 13999,
-		Note:   "god of war only",
+		Amount: 16999,
+		Note:   "not god of war only",
 		Tag:    []string{"gadget", "shopping"},
 	}
 	payload, _ := json.Marshal(e)
@@ -75,9 +164,36 @@ func TestUpdateCustomer(t *testing.T) {
 	assert.Equal(t, e.Amount, info.Amount)
 	assert.Equal(t, e.Note, info.Note)
 	assert.Equal(t, e.Tag, info.Tag)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = eh.Shutdown(ctx)
+	assert.NoError(t, err)
 }
 
 func TestGetAllExpenses(t *testing.T) {
+	eh := echo.New()
+	go func(e *echo.Echo) {
+		db, err := sql.Open("postgres", "postgresql://root:root@db/go-expenses?sslmode=disable")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		h := NewApplication(db)
+
+		e.GET("/expenses", h.GetAllUserHandler)
+		e.Start(fmt.Sprintf(":%d", serverPort))
+	}(eh)
+	for {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
 	seedExpenses(t)
 	var exps []Expenses
 
@@ -105,7 +221,7 @@ func seedExpenses(t *testing.T) Expenses {
 }
 
 func uri(paths ...string) string {
-	host := "http://localhost:2565"
+	host := fmt.Sprintf("http://localhost:%d", serverPort)
 	if paths == nil {
 		return host
 	}
