@@ -17,3 +17,7 @@ type Err struct {
 type Handler struct {
 	DB *sql.DB
 }
+
+func NewApplication(db *sql.DB) *Handler {
+	return &Handler{db}
+}

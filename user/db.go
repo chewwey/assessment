@@ -11,7 +11,7 @@ import (
 func InitDB() *sql.DB {
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("Connect to database error", err)
+		log.Fatal("whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", err)
 	}
 
 	createTb := `
@@ -26,7 +26,7 @@ func InitDB() *sql.DB {
 	_, err = db.Exec(createTb)
 
 	if err != nil {
-		log.Fatal("can't create table", err)
+		log.Fatal("weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", err)
 	}
 	return db
 }

@@ -1,3 +1,6 @@
+//go:build unit
+// +build unit
+
 package user
 
 import (
@@ -32,7 +35,7 @@ func TestUnCreateExpensesHandler(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/expenses", data)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-
+	x := float64(1234)
 	mockRows := sqlmock.NewRows([]string{"id"}).AddRow("1")
 
 	expected := "{\"id\":1,\"title\":\"test-title\",\"amount\":1234,\"note\":\"test-note\",\"tags\":[\"test-tag1\",\"test-tag2\"]}"
@@ -40,7 +43,7 @@ func TestUnCreateExpensesHandler(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	mock.ExpectQuery(regexp.QuoteMeta(
 		"INSERT INTO expenses (title, amount, note, tags) values ($1, $2, $3, $4) RETURNING id")).WithArgs(
-		sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).WillReturnRows(mockRows)
+		"test-title", x, "test-note", pq.Array([]string{"test-tag1", "test-tag2"})).WillReturnRows(mockRows)
 
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a database connection", err)

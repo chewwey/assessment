@@ -1,0 +1,2 @@
+DATABASE_URL=postgres://bgpllzzv:txz4F0zK4WdXf5_Z2ETVPIxIOBp4KiOr@tiny.db.elephantsql.com/bgpllzzv
+PORT=:2565
