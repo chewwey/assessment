@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.test
     volumes:
-      - ${PWD}/go/src/target
+      - ./:/go/src/target
     depends_on:
       - db
     networks:
